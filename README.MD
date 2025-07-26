@@ -116,8 +116,7 @@ CREATE TABLE visitor_logs (
 ## 📅 Launch Info
 
 > This version is configured to go LIVE on:
-> **📍 Amalanala Dam – Sunday, 27th July 2025**
-> Only 10 lucky winners will be served 🍜
+> Saturday, 26th July 2025**
 
 ---
 
