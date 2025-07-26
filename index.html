@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="google" content="notranslate">
+    <title>FREE Maggi 10 Second Challenge</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+    <style>
+        .game-title {
+            font-size: 2em;
+        }
+
+        .warning {
+            font-size: 1em;
+            color: red;
+        }
+
+        @media (max-width: 600px) {
+            .game-title {
+                font-size: 1.5em;
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            padding-top: 0px;
+            /* Add this line */
+            font-family: 'Segoe UI', sans-serif;
+            background: #f9f9f9;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            overflow-y: auto;
+        }
+
+
+        @media (max-width: 600px) {
+            #leaderboardScreen {
+                overflow-y: auto;
+                max-height: 90vh;
+            }
+        }
+
+        #app {
+            text-align: center;
+            margin-top: 20px;
+            padding: 20px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        #timerScreenContent {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+        }
+
+        #timer {
+            font-family: 'Courier New', monospace;
+            font-size: 12vw;
+            background: black;
+            color: red;
+            padding: 30px 60px;
+            border-radius: 20px;
+            width: fit-content;
+        }
+
+        #startStopBtn {
+            font-size: 6vw;
+            padding: 2vw;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            color: white;
+            width: 20vw;
+            height: 20vw;
+            max-width: 160px;
+            max-height: 160px;
+            text-transform: uppercase;
+        }
+
+        .start {
+            background-color: green;
+            color: white;
+            text: strong;
+        }
+
+        .stop {
+            background-color: red;
+        }
+
+        .winner-row {
+            background-color: gold;
+            font-weight: bold;
+            color: black;
+        }
+
+        table {
+            width: 90%;
+            max-width: 700px;
+            margin: 0 auto;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: center;
+        }
+
+        #closeBtn {
+            position: fixed;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #333;
+        }
+
+        .disclaimer {
+            margin-top: 20px;
+            text-align: left;
+            max-width: 500px;
+            margin-inline: auto;
+            font-size: 1em;
+            background: #fff7d1;
+            padding: 15px 20px;
+            border-radius: 12px;
+            border: 1px solid #f3d45c;
+            line-height: 1.6;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .disclaimer strong {
+            display: inline;
+            font-weight: 700;
+        }
+
+        .disclaimer-title {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 8px;
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Win Modal -->
+
+    <div id="winModal"
+        style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:999; justify-content:center; align-items:center;">
+        <div style="background:#fff; padding:20px; border-radius:10px; max-width:300px; text-align:center;">
+            <h3>🎉 You nailed it!</h3>
+            <p>You win a free Maggi plate!</p>
+            <button onclick="closeWinModal()" style="margin-top:15px; padding:8px 20px;">OK</button>
+        </div>
+    </div>
+
+    <div id="app">
+        <!-- Name Entry Screen -->
+        <div id="nameScreen">
+            <h1 class="game-title">🎯 FREE Maggi 10 Second Challenge</h1>
+            <input id="nameInput" type="text" placeholder="Enter your name" style="font-size: 1.2em; padding: 10px;" oninput="sanitizeInput(this)" maxlength="20"  required/>
+            <button id="startBtn" onclick="startGame()" class="start" style="margin-top: 15px; padding: 10px 20px; font-size: 1.1em;"><b>START</b></button>
+            <h3 class="warning">Warning Disable Sound</h3>
+            <div class="disclaimer">
+                <span class="disclaimer-title">📢 Disclaimer:</span>
+                - Only available on <strong>Sunday 27th July 2025</strong><br>
+        - Show a <strong>valid screenshot</strong> of your coupon to claim<br>
+        - <strong>One coupon per person</strong> per Sunday<br>
+        - Stable <strong>internet connection</strong> required<br>
+        - You can also play this at <strong>Amalanala Dam</strong>will provide tab<br>
+        - We are set up <strong>outside the park</strong>, not officially affiliated<br>
+        - Meet us at the <strong>main gate</strong> of Amalanala Dam<br>
+        - Only <strong>10 Lucky Winners</strong> will be awarded!
+            </div>
+            <p style="margin-top: 15px; font-weight: bold;">You have 3 chances to hit exactly 10.00 seconds</p>
+
+        </div>
+
+        <!-- Welcome Screen -->
+        <div id="welcomeScreen" style="display: none;">
+            <h2 id="welcomeMsg"></h2>
+            <p style="font-weight: bold;">You have 3 chances to hit exactly 10.00 seconds</p>
+            <button onclick="goToTimer()" class="start" style="border-radius: 10px; padding: 10px 20px; font-size: 1.1em;"><strong>START GAME</strong></button>
+        </div>
+
+        <!-- Timer Screen -->
+        <div id="timerScreen" style="display: none;">
+            <div id="timerScreenContent">
+                <div id="timer">00.00</div>
+                <button id="startStopBtn" class="start" onclick="toggleTimer()">START</button>
+                <p>Chances Left: <span id="chances">3</span></p>
+            </div>
+        </div>
+
+        <!-- Leaderboard Screen -->
+        <div id="leaderboardScreen" style="display: none;">
+            <button id="closeBtn" onclick="goHome()">&#10006;</button>
+            <h2>Your Tries</h2>
+            <div id="leaderboard"></div>
+            <div id="qrContainer" style="width:100%; margin-top:20px;"></div>
+            <h2>🏆 Our Previous Winners</h2>
+            <div id="previousWinners"></div>
+        </div>
+    </div>
+
+    <script>
+        let winSound = new Audio("win.mp3");
+    let alertSound = new Audio("alert.mp3");
+    let fireworkSound = new Audio("firework.mp3");
+    winSound.load();
+    alertSound.load();
+    fireworkSound.load();
+
+
+    let userName = "";
+    let startTime = null;
+    let intervalId = null;
+    let chancesLeft = 3;
+    let results = [];
+    let won = false;
+    let deviceFingerprint = "";
+    let todayKey = "";
+    const ENFORCE_SINGLE_DEVICE = 'Y'; // Change to 'N' to allow unlimited plays
+    const DEV_MODE = false;
+    if (DEV_MODE) {
+    localStorage.clear(); // clears for every new test
+    deviceFingerprint = "test_fp_" + Math.random().toString(36).substring(2, 8);
+    todayKey = `played_${deviceFingerprint}_${getTodayKey()}`;
+        }
+        if (DEV_MODE) {
+    const banner = document.createElement("div");
+    banner.id = "devBanner";
+   banner.style.cssText = `
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: #ffeb3b;
+  color: #333;
+  text-align: center;
+  font-weight: bold;
+  padding: 12px 10px;
+  border-bottom: 2px solid #fdd835;
+  font-size: 1.1em;
+  z-index: 9999;
+`;
+
+    banner.innerHTML = `⚠️ You are in <span style="color: red;">DEV MODE</span>. Actual game goes live on <strong>Saturday, 26/07/2025</strong>`;
+    document.body.insertBefore(banner, document.body.firstChild);
+  }
+
+// Incognito detection
+function detectIncognito(callback) {
+const fs = window.RequestFileSystem || window.webkitRequestFileSystem;
+if (!fs) {
+// fallback for mobile
+const isPrivate = /CriOS|FxiOS|EdgiOS|iPhone|iPad|Android/i.test(navigator.userAgent);
+callback(isPrivate); // assume private if mobile
+return;
+}
+fs(window.TEMPORARY, 100, () => callback(false), () => callback(true));
+}
+
+// Game Start Logic
+function getTodayKey() {
+  const d = new Date();
+  return `${d.getFullYear()}-${(d.getMonth()+1).toString().padStart(2,'0')}-${d.getDate().toString().padStart(2,'0')}`;
+}
+
+function startGame() {
+  const input = document.getElementById("nameInput");
+  userName = input.value.trim().toUpperCase().replace(/[^A-Z]/g, '');
+
+  if (userName.length < 3) {
+    alert("⚠️ Name too short.");
+    return;
+  }
+
+  const bannedWords = [
+    "CHUTIYA", "MADARCHOD", "BHOSDIKE", "RANDI", "GANDU", "LAVDA", "LUND", "MC", "BC",
+    "FUCK", "SHIT", "BITCH", "ASSHOLE", "BASTARD", "DICK", "FAGGOT", "SLUT",'MADARCHOD','BEHENCHOD','CHUTIYA','GAANDU',
+  'LAVADA','LAWADA','LUND','CHUT','BHOSDA','GAND','TATTI', 'LAMDA','LAUDA','GOANDU','BHOSADA','CUT', "GANDU","JHANTU","JHATYA","JHANTYA"
+  ,"JHAK","JHAMALJHAMAL","JHAMAL","JHAMAL JHAMAL","LAMCHA","AAI JHAWADYA" ,"AAIJHAWADYA","AAI JHAVADYA","AAI","JHAVADYA","JHAWADYA","JAHVAL","JHAWALA","JHAVALA","JHAWAL"
+  ,"RANDICHYA","FOKNICHYA","LAVDE KA BAAL", "LAVADE KA BAAL", "LAVADE KA BAL" , "LAVDE KE BAAL", "LAWADE KE BAL", "BULLYA","BULYA","BULLYA", "BULLA","BULA","SHETA","SHETYA","SHETTA"
+  ];
+
+  if (bannedWords.some(word => userName.includes(word))) {
+    alert("🚫 Please enter a clean name without abusive words.");
+    return;
+  }
+
+    const devBanner = document.getElementById("devBanner");
+if (devBanner) devBanner.remove();
+
+  let playCount = parseInt(localStorage.getItem(todayKey) || '0');
+if (ENFORCE_SINGLE_DEVICE === 'Y' && playCount > 3) {
+  alert("You've used all 3 chances today! Come back tomorrow 😊");
+  return;
+}
+
+
+  //const fpPromise = FingerprintJS.load();
+  //fpPromise.then(fp => fp.get()).then(result => {
+    //deviceFingerprint = result.visitorId;
+    //todayKey = `played_${deviceFingerprint}_${getTodayKey()}`;
+   FingerprintJS.load().then(fp => {
+  fp.get().then(result => {
+    if (!DEV_MODE) {
+      deviceFingerprint = result.visitorId;
+      todayKey = `played_${deviceFingerprint}_${getTodayKey()}`;
+    }
+    document.getElementById("fpText").innerText = deviceFingerprint;
+
+
+    if (!DEV_MODE && localStorage.getItem(todayKey)) {
+
+      alert("You've already played today! Come back tomorrow 😊");
+      return;
+    }
+
+    const input = document.getElementById("nameInput");
+    userName = input.value.trim();
+    if (!userName) {
+      alert("Please enter your name.");
+      return;
+    }
+
+    document.getElementById("nameScreen").style.display = "none";
+    document.getElementById("welcomeScreen").style.display = "block";
+    document.getElementById("welcomeMsg").innerText = `Hi ${userName}, welcome!`;
+
+    try {
+      document.documentElement.requestFullscreen?.().catch(() => {});
+    } catch (e) {}
+
+    if (ENFORCE_SINGLE_DEVICE === 'Y' && !DEV_MODE) {
+  let currentCount = parseInt(localStorage.getItem(todayKey) || '0');
+if (currentCount >= 3) {
+  alert("You've used all 3 chances today! Come back tomorrow 😊");
+  return;
+}
+}
+
+  });
+});
+    if (!DEV_MODE){
+    deviceFingerprint = "nofp_" + Math.random().toString(36).substring(2, 10); // fallback
+    }
+    document.getElementById("fpText").innerText = deviceFingerprint;
+
+    todayKey = `played_${deviceFingerprint}_${getTodayKey()}`;
+    detectIncognito(isIncognito => {
+      if (isIncognito) {
+        alert("❌ Sorry! You cannot play in Incognito Mode.");
+        document.getElementById("startBtn").disabled = true;
+        document.getElementById("startBtn").innerText = "Unavailable in Incognito";
+        return;
+      }
+
+      if (localStorage.getItem(todayKey)) {
+        alert("You've already played today! Come back tomorrow 😊");
+        return;
+      }
+
+      const input = document.getElementById("nameInput");
+      userName = input.value.trim();
+      if (!userName) {
+        alert("Please enter your name.");
+        return;
+      }
+
+      // Move UI logic out of fullscreen to avoid suppression
+      document.getElementById("nameScreen").style.display = "none";
+      document.getElementById("welcomeScreen").style.display = "block";
+      document.getElementById("welcomeMsg").innerText = `Hi ${userName}, welcome!`;
+
+      // Try fullscreen, but don’t block on it
+      try {
+        document.documentElement.requestFullscreen?.().catch(() => {});
+      } catch (e) {}
+if (ENFORCE_SINGLE_DEVICE === 'Y') {
+  let currentCount = parseInt(localStorage.getItem(todayKey) || '0');
+  if (currentCount >= 3) {
+    alert("You've used all 3 chances today! Come back tomorrow 😊");
+    return;
+  }
+  //localStorage.setItem(todayKey, currentCount + 1);
+}
+
+
+    });
+  };
+
+
+function goToTimer() {
+  document.getElementById("welcomeScreen").style.display = "none";
+  document.getElementById("timerScreen").style.display = "block";
+}
+
+function toggleTimer() {
+  if (won) return;
+
+  const btn = document.getElementById("startStopBtn");
+  const timerEl = document.getElementById("timer");
+
+  if (!startTime) {
+    startTime = Date.now();
+    btn.innerText = "STOP";
+    btn.classList.replace("start", "stop");
+    intervalId = setInterval(() => {
+      timerEl.textContent = ((Date.now() - startTime) / 1000).toFixed(2).padStart(5, '0');
+    }, 10);
+    winSound.play().then(() => {
+    winSound.pause();
+    winSound.currentTime = 0;
+    }).catch(() => {
+  // some browsers may block on first interaction too
+    });
+    alertSound.play().then(() => {
+    alertSound.pause();
+    alertSound.currentTime = 0;
+    }).catch(() => {
+  // some browsers may block on first interaction too
+    });
+    fireworkSound.play().then(() => {
+    fireworkSound.pause();
+    fireworkSound.currentTime = 0;
+    }).catch(() => {
+  // some browsers may block on first interaction too
+    });
+  } else {
+    const endTime = Date.now();
+    clearInterval(intervalId);
+    //const elapsed = "10.00"; // Simulated exact hit (replace with actual if needed)
+    const elapsed = ((endTime - startTime) / 1000).toFixed(2);
+    startTime = null;
+    btn.innerText = "START";
+    btn.classList.replace("stop", "start");
+
+    const timeNum = parseFloat(elapsed);
+    //const win = timeNum >= 9.97 && timeNum <= 10.03; -- making it easier
+    const win = elapsed === "10.00"; //exact
+
+    const displayTime = win ? "10.00" : elapsed;
+;
+    results.push({ name: userName, time: parseFloat(elapsed), status: win ? "WIN" : "TRY AGAIN" });
+fetch("save.php", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    name: userName,
+    time: displayTime,
+    status: win ? "WIN" : "TRY AGAIN",
+    fingerprint: deviceFingerprint,
+    enforce: ENFORCE_SINGLE_DEVICE
+  })
+})
+
+
+    .then(res => res.json())
+    .then(data => {
+        if (ENFORCE_SINGLE_DEVICE === 'Y') {
+  let currentCount = parseInt(localStorage.getItem(todayKey) || '0');
+  localStorage.setItem(todayKey, currentCount + 1);
+  chancesLeft = 3 - (currentCount + 1);
+  document.getElementById("chances").textContent = chancesLeft;
+}
+
+
+      timerEl.textContent = displayTime;
+
+
+      if (win) {
+        won = true;
+        alertSound.play();
+        winSound.play();
+        celebrateConfetti(4, 500);
+        fireworkSound.play();
+        
+      }
+
+      // Start loading leaderboard in background
+      fetch("leaderboard.php")
+        .then(res => res.ok ? res.json() : Promise.reject("Leaderboard fetch failed"))
+        .then(data => window.leaderboardData = data)
+        .catch(err => console.error("Leaderboard preload error:", err));
+
+      // Delay then show leaderboard
+      setTimeout(() => {
+  const couponCode = win && data?.winner_id ? data.winner_id : null;
+
+  // ✅ Only show leaderboard if won OR no chances left
+  if (win || chancesLeft <= 0) {
+    showLeaderboardScreen(couponCode);
+  } else {
+    //alert("Try again! You still have " + chancesLeft + " chances left.");
+    // If chances remain, stay on timer screen for next attempt
+    document.getElementById("timer").textContent = "00.00";
+  }
+}, 3000);
+
+
+
+            })
+    .catch(err => {
+      console.error("Error saving game:", err);
+    });
+  }
+}
+
+
+function closeWinModal() {
+  document.getElementById("winModal").style.display = "none";
+  showLeaderboardScreen(); // now show leaderboard after confetti & sound
+}
+
+function showLeaderboardScreen(winnerCoupon = null) {
+  if (ENFORCE_SINGLE_DEVICE === 'Y' && !DEV_MODE && localStorage.getItem(todayKey)) {
+
+    // Already played and trying to re-access
+    document.getElementById("timerScreen").style.display = "none";
+    document.getElementById("leaderboardScreen").innerHTML = `
+      <div style="padding: 40px; text-align: center; font-size: 1.2em; color: red;">
+        ⛔ You’ve already played today.<br>Please come back tomorrow to try again!
+      </div>
+    `;
+    document.getElementById("leaderboardScreen").style.display = "block";
+    return;
+  }
+
+  console.log("Showing leaderboard screen...");
+
+  document.getElementById("timerScreen").style.display = "none";
+  document.getElementById("leaderboardScreen").style.display = "block";
+
+  if (!results.length) {
+    console.warn("No local results found to display.");
+    document.getElementById("leaderboard").innerHTML = "<p>No results recorded.</p>";
+  }
+
+  const sorted = results.sort((a, b) => Math.abs(a.time - 10) - Math.abs(b.time - 10));
+  const rows = sorted.map(r =>
+    `<tr class="${r.status === 'WIN' ? 'winner-row' : ''}">
+      <td>${r.name}</td>
+      <td>${r.time.toFixed(2)}</td>
+      <td>${r.status}</td>
+    </tr>`
+  ).join("");
+    
+
+  document.getElementById("leaderboard").innerHTML = `<table><tr><th>Name</th><th>Time</th><th>Status</th></tr>${rows}</table>`;
+
+  (window.leaderboardData 
+  ? Promise.resolve(window.leaderboardData) 
+  : fetch("leaderboard.php").then(res => {
+      if (!res.ok) throw new Error("Network response was not ok");
+      return res.json();
+    })
+)
+.then(data => {
+
+      if (!data?.winners?.length) {
+        document.getElementById("previousWinners").innerHTML = "<p>No winners yet.</p>";
+        return;
+      }
+      const winners = data.winners.map(w =>
+        `<tr><td>${w.name}</td><td>${parseFloat(w.time).toFixed(2)}</td><td>${w.played_at}</td></tr>`
+      ).join("");
+      document.getElementById("previousWinners").innerHTML =
+        `<table><tr><th>Name</th><th>Time</th><th>Played At</th></tr>${winners}</table>`;
+    })
+    .catch(err => {
+      console.error("Error loading leaderboard:", err);
+      alert("Could not load leaderboard. Try normal mode.");
+    });
+    if (winnerCoupon && deviceFingerprint) {
+  const qrContainer = document.createElement("div");
+  qrContainer.id = "qrContainer";
+  qrContainer.style.textAlign = "center";
+  qrContainer.style.marginTop = "10px";
+
+  const qrLabel = document.createElement("div");
+  qrLabel.innerHTML = `<strong>Scan this QR at the Maggi Counter:</strong><br>`;
+  qrContainer.appendChild(qrLabel);
+
+  QRCode.toCanvas(document.createElement('canvas'), JSON.stringify({ winner_id: winnerCoupon, fingerprint: deviceFingerprint }), { width: 200 }, (err, canvas) => {
+    if (err) return console.error(err);
+    qrContainer.appendChild(canvas);
+
+    // Insert QR code above coupon box
+    const couponBox = document.createElement("div");
+    couponBox.style.background = "#e0ffe0";
+    couponBox.style.border = "2px dashed green";
+    couponBox.style.padding = "20px";
+    couponBox.style.margin = "20px auto";
+    couponBox.style.maxWidth = "400px";
+    couponBox.style.borderRadius = "10px";
+    couponBox.style.fontSize = "1.2em";
+    couponBox.style.fontWeight = "bold";
+    couponBox.style.color = "#006400";
+    couponBox.innerHTML = `🎟️ <strong>Your Coupon Code:</strong> <span style="font-size:1.4em;">${winnerCoupon}</span><br><small>Take Screenshot , and show this to claim your free Maggi!</small>`;
+
+    const container = document.getElementById("leaderboardScreen");
+    container.prepend(couponBox);
+    container.prepend(qrContainer);
+  });
+}
+
+
+    
+}
+
+  
+
+function goHome() {
+  location.reload();
+}
+
+function celebrateConfetti(times = 3, delay = 500) {
+  let count = 0;
+  const interval = setInterval(() => {
+    confetti({ spread: 180, particleCount: 150 });
+    if (++count >= times) clearInterval(interval);
+  }, delay);
+}
+function showQRCode(winnerId, fingerprint) {
+  const qrData = JSON.stringify({ winner_id: winnerId, fingerprint });
+  QRCode.toCanvas(document.createElement('canvas'), qrData, { width: 200 }, (err, canvas) => {
+    if (err) return console.error(err);
+    
+    const container = document.getElementById("qrContainer");
+    container.innerHTML = `
+      <div style="text-align:center; margin-top: 20px;">
+        <strong>Scan this QR at the Maggi Counter:</strong><br>
+      </div>
+    `;
+
+    container.querySelector("div").appendChild(canvas);
+  });
+}
+
+    </script>
+    <div id="debugFingerprint" style="
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #eee;
+  color: #333;
+  font-size: 12px;
+  text-align: center;
+  padding: 5px;
+  border-top: 1px solid #ccc;
+  z-index: 9999;
+">
+        <div style="font-size: 0.9em; color: gray; margin-top: 20px;" id="visitStats">
+            👥 Visitors Today: <strong id="todayCount">…</strong> |
+            Total: <strong id="totalCount">…</strong>
+            Device Fingerprint: <span id="fpText">loading...</span>
+        </div>
+
+        <script>
+            // Call tracking + get hit counts
+  fetch("track_visitor.php", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: "fingerprint=" + encodeURIComponent(deviceFingerprint)
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data.status === "logged") {
+        document.getElementById("todayCount").textContent = data.todayVisitors;
+        document.getElementById("totalCount").textContent = data.totalVisitors;
+      }
+    })
+    .catch(console.error);
+const bannedWords = [
+    "CHUTIYA", "MADARCHOD", "BHOSDIKE", "BHE**CHOD", "RANDI", "GANDU", "LAVDA", "LUND", "MC", "BC",
+    "FUCK", "SHIT", "BITCH", "ASSHOLE", "BASTARD", "DICK", "FAGGOT", "SLUT"
+  ];
+
+  // 🔠 Convert to uppercase & strip non-letters
+  function sanitizeInput(input) {
+    input.value = input.value.toUpperCase().replace(/[^A-Z]/g, '');
+  }
+
+  function containsProfanity(text) {
+    const cleanText = text.toUpperCase().replace(/[^A-Z]/g, '');
+    return bannedWords.some(word => cleanText.includes(word));
+  }
+
+  function validateNameInput() {
+    const name = document.getElementById("nameInput").value.trim();
+    if (name.length < 3) {
+      alert("⚠️ Name too short.");
+      return false;
+    }
+    if (containsProfanity(name)) {
+      alert("🚫 Please enter a clean name without abusive words.");
+      return false;
+    }
+    return true;
+  }
+
+  // 🔘 Attach to your "Start Game" button
+  document.getElementById("startButton").addEventListener("click", function (e) {
+    if (!validateNameInput()) {
+      e.preventDefault(); // Stop game start
+    }
+  });
+        </script>
+
+
+
+    </div>
+</body>
+
+</html>
