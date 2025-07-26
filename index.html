@@ -297,13 +297,7 @@ function startGame() {
     return;
   }
 
-  const bannedWords = [
-    "CHUTIYA", "MADARCHOD", "BHOSDIKE", "RANDI", "GANDU", "LAVDA", "LUND", "MC", "BC",
-    "FUCK", "SHIT", "BITCH", "ASSHOLE", "BASTARD", "DICK", "FAGGOT", "SLUT",'MADARCHOD','BEHENCHOD','CHUTIYA','GAANDU',
-  'LAVADA','LAWADA','LUND','CHUT','BHOSDA','GAND','TATTI', 'LAMDA','LAUDA','GOANDU','BHOSADA','CUT', "GANDU","JHANTU","JHATYA","JHANTYA"
-  ,"JHAK","JHAMALJHAMAL","JHAMAL","JHAMAL JHAMAL","LAMCHA","AAI JHAWADYA" ,"AAIJHAWADYA","AAI JHAVADYA","AAI","JHAVADYA","JHAWADYA","JAHVAL","JHAWALA","JHAVALA","JHAWAL"
-  ,"RANDICHYA","FOKNICHYA","LAVDE KA BAAL", "LAVADE KA BAAL", "LAVADE KA BAL" , "LAVDE KE BAAL", "LAWADE KE BAL", "BULLYA","BULYA","BULLYA", "BULLA","BULA","SHETA","SHETYA","SHETTA"
-  ];
+  const bannedWords = ["put words here"];
 
   if (bannedWords.some(word => userName.includes(word))) {
     alert("🚫 Please enter a clean name without abusive words.");
@@ -697,9 +691,7 @@ function showQRCode(winnerId, fingerprint) {
       }
     })
     .catch(console.error);
-const bannedWords = [
-    "CHUTIYA", "MADARCHOD", "BHOSDIKE", "BHE**CHOD", "RANDI", "GANDU", "LAVDA", "LUND", "MC", "BC",
-    "FUCK", "SHIT", "BITCH", "ASSHOLE", "BASTARD", "DICK", "FAGGOT", "SLUT"
+const bannedWords = [    "put words here"
   ];
 
   // 🔠 Convert to uppercase & strip non-letters
